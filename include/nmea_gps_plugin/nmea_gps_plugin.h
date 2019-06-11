@@ -16,6 +16,9 @@
 #include <geodesy/utm.h>
 #include <hector_gazebo_plugins/update_timer.h>
 
+// Headers in STL
+#include <time.h>
+
 namespace nmea_gps_plugin
 {
     namespace default_param
@@ -62,6 +65,8 @@ namespace gazebo
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
             nmea_gps_plugin::byte getCheckSum(std::string sentence);
+            std::string getUnixTime(ros::Time stamp);
+            nmea_msgs::Sentence getGPRMC(ros::Time stamp);
     };
 }
 

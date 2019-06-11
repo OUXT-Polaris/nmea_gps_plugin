@@ -104,12 +104,25 @@ namespace gazebo
         return;
     }
 
+    nmea_msgs::Sentence getGPRMC(ros::Time stamp)
+    {
+
+    }
+
+    std::string getUnixTime(ros::Time stamp)
+    {
+        
+    }
+
     void NmeaGpsPlugin::Update()
     {
         common::Time sim_time = world_ptr_->SimTime();
         double dt = update_timer_.getTimeSinceLastUpdate().Double();
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d velocity = link_ptr_->WorldLinearVel();
+        ros::Time stamp;
+        stamp.sec = sim_time.sec;
+        stamp.nsec = sim_time.nsec;
         return;
     }
 
