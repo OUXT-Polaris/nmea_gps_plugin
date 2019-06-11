@@ -88,7 +88,7 @@ namespace gazebo
         return;
     }
 
-    nmea_gps_plugin::byte getCheckSum(std::string sentence)
+    nmea_gps_plugin::byte NmeaGpsPlugin::getCheckSum(std::string sentence)
     {
         nmea_gps_plugin::byte ret;
         for(int i=0; i<sentence.size(); i++)
@@ -104,14 +104,27 @@ namespace gazebo
         return;
     }
 
-    nmea_msgs::Sentence getGPRMC(ros::Time stamp)
+    nmea_msgs::Sentence NmeaGpsPlugin::getGPRMC(ros::Time stamp)
     {
-
+        nmea_msgs::Sentence sentence;
+        sentence.header.frame_id = frame_id_;
+        sentence.header.stamp = stamp;
+        //sentence.sentence = "$GPRMC," + getUnixTime(stamp) + ",A," +;
     }
 
-    std::string getUnixTime(ros::Time stamp)
+    std::string NmeaGpsPlugin::getUnixTime(ros::Time stamp)
     {
-        
+        std::string ret;
+        time_t t = stamp.sec;
+        struct tm *utc_time;
+        utc_time = gmtime(&t);
+        int hour = utc_time->tm_hour;
+        int min = utc_time->tm_min;
+        int sec = utc_time->tm_sec;
+        uint32_t nsec = stamp.nsec;
+        int csec = round((double)nsec/std::pow(10,7));
+        ret = std::to_string(hour) + std::to_string(min) + std::to_string(sec) + "." + std::to_string(csec);
+        return ret;
     }
 
     void NmeaGpsPlugin::Update()
@@ -123,6 +136,17 @@ namespace gazebo
         ros::Time stamp;
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
+        geodesy::UTMPoint current_utm_point;
+        current_utm_point.northing = pose.Pos().X();
+        current_utm_point.easting = pose.Pos().Y();
+        current_utm_point.altitude = pose.Pos().Z();
+        current_utm_point.zone = initial_utim_pose_.position.zone;
+        geometry_msgs::Quaternion current_utm_quat;
+        current_utm_quat.x = pose.Rot().X();
+        current_utm_quat.y = pose.Rot().Y();
+        current_utm_quat.z = pose.Rot().Z();
+        current_utm_quat.w = pose.Rot().W();
+        geodesy::UTMPose current_utm_pose(current_utm_point,current_utm_quat);
         return;
     }
 

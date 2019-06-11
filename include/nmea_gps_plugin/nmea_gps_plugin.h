@@ -18,6 +18,7 @@
 
 // Headers in STL
 #include <time.h>
+#include <math.h>
 
 namespace nmea_gps_plugin
 {
@@ -61,6 +62,7 @@ namespace gazebo
             double publish_rate_;
             ros::Publisher nmea_pub_;
             geographic_msgs::GeoPose initial_pose_;
+            geographic_msgs::GeoPose current_geo_pose_;
             geodesy::UTMPose initial_utim_pose_;
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
