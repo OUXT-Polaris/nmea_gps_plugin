@@ -82,16 +82,24 @@ namespace gazebo
         vec.z = reference_heading_;
         initial_pose_.orientation = quaternion_operation::convertEulerAngleToQuaternion(vec);
         initial_utim_pose_ = geodesy::UTMPose(initial_pose_);
+        update_timer_.setUpdateRate(publish_rate_);
+        update_timer_.Load(world_ptr_, sdf);
+        update_connection_ = update_timer_.Connect(boost::bind(&NmeaGpsPlugin::Update, this));
         return;
     }
 
     void NmeaGpsPlugin::Reset()
     {
+        update_timer_.Reset();
         return;
     }
 
     void NmeaGpsPlugin::Update()
     {
+        common::Time sim_time = world_ptr_->SimTime();
+        double dt = update_timer_.getTimeSinceLastUpdate().Double();
+        ignition::math::Pose3d pose = link_ptr_->WorldPose();
+        ignition::math::Vector3d velocity = link_ptr_->WorldLinearVel();
         return;
     }
 

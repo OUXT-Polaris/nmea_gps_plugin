@@ -5,6 +5,8 @@
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/Link.hh>
+#include <gazebo/physics/World.hh>
+#include <gazebo/physics/physics.hh>
 
 // Headers in ROS
 #include <ros/ros.h>
@@ -55,8 +57,8 @@ namespace gazebo
             ros::Publisher nmea_pub_;
             geographic_msgs::GeoPose initial_pose_;
             geodesy::UTMPose initial_utim_pose_;
-            UpdateTimer updateTimer;
-            event::ConnectionPtr updateConnection;
+            UpdateTimer update_timer_;
+            event::ConnectionPtr update_connection_;
     };
 }
 
