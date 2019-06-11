@@ -7,21 +7,26 @@ find_package(catkin REQUIRED COMPONENTS
   geodesy
   nmea_msgs
   roscpp
+  quaternion_operation
+  hector_gazebo_plugins
 )
 
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES nmea_gps_plugin
-  CATKIN_DEPENDS gazebo gazebo_ros geodesy nmea_msgs roscpp
+  CATKIN_DEPENDS gazebo gazebo_ros geodesy nmea_msgs roscpp quaternion_operation hector_gazebo_plugins
 #  DEPENDS system_lib
 )
 
 find_package(gazebo REQUIRED)
 
+find_package(Eigen3 REQUIRED)
+
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 link_directories(${GAZEBO_LIBRARY_DIRS})

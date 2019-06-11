@@ -39,6 +39,7 @@ namespace gazebo
         reference_altitude_ = nmea_gps_plugin::default_param::reference_altitude;
         reference_heading_ = nmea_gps_plugin::default_param::reference_heading;
         nmea_topic_ = nmea_gps_plugin::default_param::nmea_topic;
+        publish_rate_ = nmea_gps_plugin::default_param::publish_rate;
         if (sdf->HasElement("frameId"))
         {
             frame_id_ = sdf->GetElement("frameId")->GetValue()->GetAsString();
@@ -46,6 +47,10 @@ namespace gazebo
         if (sdf->HasElement("topicName"))
         {
             nmea_topic_ = sdf->GetElement("topicName")->GetValue()->GetAsString();
+        }
+        if (sdf->HasElement("publishRate"))
+        {
+            sdf->GetElement("publishRate")->GetValue()->Get(publish_rate_);
         }
         if (sdf->HasElement("referenceLatitude"))
         {
@@ -59,7 +64,7 @@ namespace gazebo
         {
             if (sdf->GetElement("referenceHeading")->GetValue()->Get(reference_heading_))
             {
-                reference_heading_ *= M_PI/180.0;
+                reference_heading_ = reference_heading_*M_PI/180.0;
             }
         }
         if (sdf->HasElement("referenceAltitude"))
@@ -68,6 +73,15 @@ namespace gazebo
         }
         node_handle_ = ros::NodeHandle(namespace_);
         nmea_pub_ = node_handle_.advertise<nmea_msgs::Sentence>(nmea_topic_,1);
+        initial_pose_.position.longitude = reference_longitude_;
+        initial_pose_.position.latitude = reference_latitude_;
+        initial_pose_.position.altitude = reference_altitude_;
+        geometry_msgs::Vector3 vec;
+        vec.x = 0.0;
+        vec.y = 0.0;
+        vec.z = reference_heading_;
+        initial_pose_.orientation = quaternion_operation::convertEulerAngleToQuaternion(vec);
+        initial_utim_pose_ = geodesy::UTMPose(initial_pose_);
         return;
     }
 

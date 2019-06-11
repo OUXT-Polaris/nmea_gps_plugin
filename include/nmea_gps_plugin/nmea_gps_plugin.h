@@ -9,6 +9,10 @@
 // Headers in ROS
 #include <ros/ros.h>
 #include <nmea_msgs/Sentence.h>
+#include <geographic_msgs/GeoPose.h>
+#include <quaternion_operation/quaternion_operation.h>
+#include <geodesy/utm.h>
+#include <hector_gazebo_plugins/update_timer.h>
 
 namespace nmea_gps_plugin
 {
@@ -18,6 +22,7 @@ namespace nmea_gps_plugin
         constexpr double reference_latitude = 0.0;
         constexpr double reference_heading = 0.0;
         constexpr double reference_altitude = 0.0;
+        constexpr double publish_rate = 1.0;
         const std::string nmea_topic = "/nmea/sentence";
     }
 }
@@ -46,7 +51,12 @@ namespace gazebo
             double reference_longitude_;
             double reference_latitude_;
             double reference_heading_;
+            double publish_rate_;
             ros::Publisher nmea_pub_;
+            geographic_msgs::GeoPose initial_pose_;
+            geodesy::UTMPose initial_utim_pose_;
+            UpdateTimer updateTimer;
+            event::ConnectionPtr updateConnection;
     };
 }
 
