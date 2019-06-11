@@ -27,6 +27,8 @@ namespace nmea_gps_plugin
         constexpr double publish_rate = 1.0;
         const std::string nmea_topic = "/nmea/sentence";
     }
+
+    typedef unsigned char byte;
 }
 
 namespace gazebo
@@ -59,6 +61,7 @@ namespace gazebo
             geodesy::UTMPose initial_utim_pose_;
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
+            nmea_gps_plugin::byte getCheckSum(std::string sentence);
     };
 }
 

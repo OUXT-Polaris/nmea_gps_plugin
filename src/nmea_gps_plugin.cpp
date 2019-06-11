@@ -88,6 +88,16 @@ namespace gazebo
         return;
     }
 
+    nmea_gps_plugin::byte getCheckSum(std::string sentence)
+    {
+        nmea_gps_plugin::byte ret;
+        for(int i=0; i<sentence.size(); i++)
+        {
+            ret ^= (nmea_gps_plugin::byte)sentence[i];
+        }
+        return ret;
+    }
+
     void NmeaGpsPlugin::Reset()
     {
         update_timer_.Reset();
