@@ -19,6 +19,7 @@
 // Headers in STL
 #include <time.h>
 #include <math.h>
+#include <memory>
 
 namespace nmea_gps_plugin
 {
