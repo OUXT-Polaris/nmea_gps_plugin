@@ -88,13 +88,14 @@ namespace gazebo
         return;
     }
 
-    nmea_gps_plugin::byte NmeaGpsPlugin::getCheckSum(std::string sentence)
+    std::string NmeaGpsPlugin::getCheckSum(std::string sentence)
     {
-        nmea_gps_plugin::byte ret;
+        nmea_gps_plugin::byte checksum;
         for(int i=0; i<sentence.size(); i++)
         {
-            ret ^= (nmea_gps_plugin::byte)sentence[i];
+            checksum ^= (nmea_gps_plugin::byte)sentence[i];
         }
+        std::string ret(reinterpret_cast<char const*>(checksum));
         return ret;
     }
 
@@ -109,7 +110,32 @@ namespace gazebo
         nmea_msgs::Sentence sentence;
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
-        //sentence.sentence = "$GPRMC," + getUnixTime(stamp) + ",A," +;
+        sentence.sentence = "$GPRMC," + getUnixTime(stamp) + ",A,";
+        double lat = std::fabs(current_geo_pose_.position.latitude);
+        std::string north_or_south;
+        if(lat >= 0.0)
+        {
+            north_or_south = "N";
+        }
+        else
+        {
+            north_or_south = "S";
+        }
+        sentence.sentence = sentence.sentence + convertToDmm(lat) + "," + north_or_south + ",";
+        double lon = std::fabs(current_geo_pose_.position.longitude);
+        std::string east_or_west;
+        if(lon >= 0.0)
+        {
+            east_or_west = "E";
+        }
+        else
+        {
+            east_or_west = "W";
+        }
+        sentence.sentence = sentence.sentence + convertToDmm(lon) + "," + east_or_west + ",";
+        double vel = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 1.94384; //[knot]
+        sentence.sentence = sentence.sentence + std::to_string(vel) + ",";
+        sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
     }
 
     std::string NmeaGpsPlugin::getUnixTime(ros::Time stamp)
@@ -132,7 +158,10 @@ namespace gazebo
         common::Time sim_time = world_ptr_->SimTime();
         double dt = update_timer_.getTimeSinceLastUpdate().Double();
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
-        ignition::math::Vector3d velocity = link_ptr_->WorldLinearVel();
+        ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
+        current_twist_.linear.x = linear_velocity.X();
+        current_twist_.linear.y = linear_velocity.Y();
+        current_twist_.linear.z = linear_velocity.Z();
         ros::Time stamp;
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
@@ -147,7 +176,16 @@ namespace gazebo
         current_utm_quat.z = pose.Rot().Z();
         current_utm_quat.w = pose.Rot().W();
         geodesy::UTMPose current_utm_pose(current_utm_point,current_utm_quat);
+        current_geo_pose_ = geodesy::toMsg(current_utm_pose);
         return;
+    }
+
+    std::string convertToDmm(double value)
+    {
+        std::string ret;
+        ROS_ASSERT(value > 0.0);
+        ret = std::to_string(std::floor(value)) + std::to_string((value-std::floor(value)*60.0));
+        return ret;
     }
 
     GZ_REGISTER_MODEL_PLUGIN(NmeaGpsPlugin)

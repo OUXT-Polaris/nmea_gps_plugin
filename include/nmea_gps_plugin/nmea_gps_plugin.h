@@ -66,9 +66,11 @@ namespace gazebo
             geodesy::UTMPose initial_utim_pose_;
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
-            nmea_gps_plugin::byte getCheckSum(std::string sentence);
+            std::string getCheckSum(std::string sentence);
             std::string getUnixTime(ros::Time stamp);
             nmea_msgs::Sentence getGPRMC(ros::Time stamp);
+            std::string convertToDmm(double value);
+            geometry_msgs::Twist current_twist_;
     };
 }
 
