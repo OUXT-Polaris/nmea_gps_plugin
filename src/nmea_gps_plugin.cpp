@@ -138,6 +138,8 @@ namespace gazebo
         double angle = std::atan2(current_twist_.linear.y,current_twist_.linear.x);
         angle = (double)(int)((angle*pow(10.0, 2)) + 0.9 ) * pow(10.0, -1);
         sentence.sentence = sentence.sentence + std::to_string(angle) + ",";
+        sentence.sentence = sentence.sentence + getUnixDay(stamp) + ",,,";
+        sentence.sentence = sentence.sentence + "A";
         sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
     }
 
