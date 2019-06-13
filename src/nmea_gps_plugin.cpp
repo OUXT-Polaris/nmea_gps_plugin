@@ -135,7 +135,31 @@ namespace gazebo
         sentence.sentence = sentence.sentence + convertToDmm(lon) + "," + east_or_west + ",";
         double vel = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 1.94384; //[knot]
         sentence.sentence = sentence.sentence + std::to_string(vel) + ",";
+        double angle = std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        angle = (double)(int)((angle*pow(10.0, 2)) + 0.9 ) * pow(10.0, -1);
+        sentence.sentence = sentence.sentence + std::to_string(angle) + ",";
         sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
+    }
+
+    std::string NmeaGpsPlugin::getUnixDay(ros::Time stamp)
+    {
+        std::string ret;
+        time_t t = stamp.sec;
+        struct tm *utc_time;
+        utc_time = gmtime(&t);
+        int day = utc_time->tm_mday;
+        int month = utc_time->tm_mon;
+        int year = 1900 + utc_time->tm_year;
+        std::string year_str;
+        for(int i=0; std::to_string(year).size(); i++)
+        {
+            if(i >= std::to_string(year).size()-2)
+            {
+                year_str = year_str + std::to_string(year)[i];
+            }
+        }
+        ret = std::to_string(day) + std::to_string(month) + year_str;
+        return ret;
     }
 
     std::string NmeaGpsPlugin::getUnixTime(ros::Time stamp)

@@ -68,6 +68,7 @@ namespace gazebo
             event::ConnectionPtr update_connection_;
             std::string getCheckSum(std::string sentence);
             std::string getUnixTime(ros::Time stamp);
+            std::string getUnixDay(ros::Time stamp);
             nmea_msgs::Sentence getGPRMC(ros::Time stamp);
             std::string convertToDmm(double value);
             geometry_msgs::Twist current_twist_;
