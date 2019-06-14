@@ -258,15 +258,28 @@ namespace gazebo
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
         geodesy::UTMPoint current_utm_point;
+#if (GAZEBO_MAJOR_VERSION >= 8)
         current_utm_point.northing = pose.Pos().X();
         current_utm_point.easting = pose.Pos().Y();
         current_utm_point.altitude = pose.Pos().Z();
+#else
+        current_utm_point.northing = pose.pos.x;
+        current_utm_point.easting = pose.pos.y;
+        current_utm_point.altitude = pose.pos.z;
+#endif
         current_utm_point.zone = initial_utim_pose_.position.zone;
         geometry_msgs::Quaternion current_utm_quat;
+#if (GAZEBO_MAJOR_VERSION >= 8)
         current_utm_quat.x = pose.Rot().X();
         current_utm_quat.y = pose.Rot().Y();
         current_utm_quat.z = pose.Rot().Z();
         current_utm_quat.w = pose.Rot().W();
+#else
+        current_utm_quat.x = pose.rot.x;
+        current_utm_quat.y = pose.rot.y;
+        current_utm_quat.z = pose.rot.z;
+        current_utm_quat.w = pose.rot.w;
+#endif
         geodesy::UTMPose current_utm_pose(current_utm_point,current_utm_quat);
         current_geo_pose_ = geodesy::toMsg(current_utm_pose);
         return;
