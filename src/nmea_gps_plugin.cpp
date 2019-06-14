@@ -299,6 +299,10 @@ namespace gazebo
 #endif
         geodesy::UTMPose current_utm_pose(current_utm_point,current_utm_quat);
         current_geo_pose_ = geodesy::toMsg(current_utm_pose);
+        nmea_pub_.publish(getGPRMC(stamp));
+        nmea_pub_.publish(getGPGGA(stamp));
+        nmea_pub_.publish(getGPVTG(stamp));
+        nmea_pub_.publish(getGPHDT(stamp));
         return;
     }
 
