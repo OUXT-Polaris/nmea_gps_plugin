@@ -105,6 +105,15 @@ namespace gazebo
         return;
     }
 
+    nmea_msgs::Sentence NmeaGpsPlugin::getGPGGA(ros::Time stamp)
+    {
+        nmea_msgs::Sentence sentence;
+        sentence.header.frame_id = frame_id_;
+        sentence.header.stamp = stamp;
+        sentence.sentence = "$GPGGA," + getUnixTime(stamp) + ",A,";
+        return sentence;
+    }
+
     nmea_msgs::Sentence NmeaGpsPlugin::getGPRMC(ros::Time stamp)
     {
         nmea_msgs::Sentence sentence;
@@ -141,6 +150,7 @@ namespace gazebo
         sentence.sentence = sentence.sentence + getUnixDay(stamp) + ",,,";
         sentence.sentence = sentence.sentence + "A";
         sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
+        return sentence;
     }
 
     std::string NmeaGpsPlugin::getUnixDay(ros::Time stamp)
