@@ -245,8 +245,8 @@ namespace gazebo
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
 #else
-        ignition::math::Pose3d pose = link_ptr_->GetWorldPose();
-        ignition::math::Vector3d linear_velocity = link_ptr_->GetWorldLinearVel();
+        gazebo::math::Pose pose = link_ptr_->GetWorldPose();
+        gazebo::math::Vector3d linear_velocity = link_ptr_->GetWorldLinearVel();
 #endif
         current_twist_.linear.x = linear_velocity.X();
         current_twist_.linear.y = linear_velocity.Y();
