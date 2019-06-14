@@ -244,13 +244,16 @@ namespace gazebo
 #if (GAZEBO_MAJOR_VERSION >= 8)
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
-#else
-        gazebo::math::Pose pose = link_ptr_->GetWorldPose();
-        gazebo::math::Vector3d linear_velocity = link_ptr_->GetWorldLinearVel();
-#endif
         current_twist_.linear.x = linear_velocity.X();
         current_twist_.linear.y = linear_velocity.Y();
         current_twist_.linear.z = linear_velocity.Z();
+#else
+        gazebo::math::Pose pose = link_ptr_->GetWorldPose();
+        gazebo::math::Vector3 linear_velocity = link_ptr_->GetWorldLinearVel();
+        current_twist_.linear.x = linear_velocity.x;
+        current_twist_.linear.y = linear_velocity.y;
+        current_twist_.linear.z = linear_velocity.z;
+#endif
         ros::Time stamp;
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
