@@ -72,6 +72,7 @@ namespace gazebo
             std::string getUnixDay(ros::Time stamp);
             nmea_msgs::Sentence getGPRMC(ros::Time stamp);
             nmea_msgs::Sentence getGPGGA(ros::Time stamp);
+            nmea_msgs::Sentence getGPVTG(ros::Time stamp);
             std::string convertToDmm(double value);
             geometry_msgs::Twist current_twist_;
     };

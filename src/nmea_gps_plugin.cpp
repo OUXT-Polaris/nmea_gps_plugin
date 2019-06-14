@@ -179,6 +179,24 @@ namespace gazebo
         return sentence;
     }
 
+    nmea_msgs::Sentence NmeaGpsPlugin::getGPVTG(ros::Time stamp)
+    {
+        nmea_msgs::Sentence sentence;
+        sentence.header.frame_id = frame_id_;
+        sentence.header.stamp = stamp;
+        sentence.sentence = "$GPVTG,";
+        double angle = std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        angle = (double)(int)((angle*pow(10.0, 2)) + 0.9 ) * pow(10.0, -1);
+        sentence.sentence = sentence.sentence + std::to_string(angle) + ",T,,M,";
+        double vel_knot = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 1.94384; //[knot]
+        sentence.sentence = sentence.sentence + std::to_string(vel_knot) + ",N,";
+        double vel_kmph = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 3.6; //[km/h]
+        sentence.sentence = sentence.sentence + std::to_string(vel_kmph) + ",K,";
+        sentence.sentence = sentence.sentence + ",A,";
+        sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
+        return sentence;
+    }
+
     std::string NmeaGpsPlugin::getUnixDay(ros::Time stamp)
     {
         std::string ret;
