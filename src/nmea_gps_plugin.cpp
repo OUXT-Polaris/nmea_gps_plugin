@@ -96,6 +96,7 @@ namespace gazebo
             checksum ^= (nmea_gps_plugin::byte)sentence[i];
         }
         std::string ret(reinterpret_cast<char const*>(checksum));
+        ret = "*" + ret;
         return ret;
     }
 
@@ -110,7 +111,32 @@ namespace gazebo
         nmea_msgs::Sentence sentence;
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
-        sentence.sentence = "$GPGGA," + getUnixTime(stamp) + ",A,";
+        sentence.sentence = "$GPGGA," + getUnixTime(stamp);
+        double lat = std::fabs(current_geo_pose_.position.latitude);
+        std::string north_or_south;
+        if(lat >= 0.0)
+        {
+            north_or_south = "N";
+        }
+        else
+        {
+            north_or_south = "S";
+        }
+        sentence.sentence = sentence.sentence + convertToDmm(lat) + "," + north_or_south + ",";
+        double lon = std::fabs(current_geo_pose_.position.longitude);
+        std::string east_or_west;
+        if(lon >= 0.0)
+        {
+            east_or_west = "E";
+        }
+        else
+        {
+            east_or_west = "W";
+        }
+        sentence.sentence = sentence.sentence + convertToDmm(lon) + "," + east_or_west + ",1,08,1.0,";
+        sentence.sentence = sentence.sentence + std::to_string(current_geo_pose_.position.altitude) + ",M,";
+        sentence.sentence = sentence.sentence + std::to_string(current_geo_pose_.position.altitude) + ",M,,0000,";
+        sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
         return sentence;
     }
 
