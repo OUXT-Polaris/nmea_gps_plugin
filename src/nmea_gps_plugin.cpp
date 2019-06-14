@@ -217,10 +217,19 @@ namespace gazebo
 
     void NmeaGpsPlugin::Update()
     {
+#if (GAZEBO_MAJOR_VERSION >= 8)
         common::Time sim_time = world_ptr_->SimTime();
+#else
+        common::Time sim_time = world_ptr_->GetSimTime();
+#endif
         double dt = update_timer_.getTimeSinceLastUpdate().Double();
+#if (GAZEBO_MAJOR_VERSION >= 8)
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
+#else
+        ignition::math::Pose3d pose = link_ptr_->GetWorldPose();
+        ignition::math::Vector3d linear_velocity = link_ptr_->GetWorldLinearVel();
+#endif
         current_twist_.linear.x = linear_velocity.X();
         current_twist_.linear.y = linear_velocity.Y();
         current_twist_.linear.z = linear_velocity.Z();
