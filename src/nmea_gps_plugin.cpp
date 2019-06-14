@@ -135,7 +135,7 @@ namespace gazebo
         }
         sentence.sentence = sentence.sentence + convertToDmm(lon) + "," + east_or_west + ",1,08,1.0,";
         sentence.sentence = sentence.sentence + std::to_string(current_geo_pose_.position.altitude) + ",M,";
-        sentence.sentence = sentence.sentence + std::to_string(current_geo_pose_.position.altitude) + ",M,,0000,";
+        sentence.sentence = sentence.sentence + std::to_string(current_geo_pose_.position.altitude) + ",M,,0000";
         sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
         return sentence;
     }
@@ -192,7 +192,24 @@ namespace gazebo
         sentence.sentence = sentence.sentence + std::to_string(vel_knot) + ",N,";
         double vel_kmph = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 3.6; //[km/h]
         sentence.sentence = sentence.sentence + std::to_string(vel_kmph) + ",K,";
-        sentence.sentence = sentence.sentence + ",A,";
+        sentence.sentence = sentence.sentence + ",A";
+        sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
+        return sentence;
+    }
+
+    nmea_msgs::Sentence NmeaGpsPlugin::getGPHDT(ros::Time stamp)
+    {
+        nmea_msgs::Sentence sentence;
+        sentence.header.frame_id = frame_id_;
+        sentence.header.stamp = stamp;
+        sentence.sentence = "$GPHDT,";
+        geometry_msgs::Vector3 vec = quaternion_operation::convertQuaternionToEulerAngle(current_geo_pose_.orientation);
+        double angle = vec.z/M_PI*180;
+        if(angle < 0)
+        {
+            angle = angle + 360.0;
+        }
+        sentence.sentence = sentence.sentence + std::to_string(angle) + ",T";
         sentence.sentence = sentence.sentence + getCheckSum(sentence.sentence);
         return sentence;
     }
