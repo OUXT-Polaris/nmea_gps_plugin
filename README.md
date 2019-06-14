@@ -10,3 +10,6 @@
 ## Available Sentence
 ### GPRMC
 Timestamp,Status,Latitude,Longitude,Velocity,Heading of Velocity
+
+### GPGGA
+Timestamp,Latitude,Longitude,Number of satelite,Altitude
