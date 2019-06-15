@@ -125,13 +125,13 @@ namespace gazebo
 
     std::string NmeaGpsPlugin::getCheckSum(std::string sentence)
     {
-        //nmea_gps_plugin::byte checksum;
         uint8_t checksum;
-        for(int i=0; i<sentence.size(); i++)
+        for(int i=1; i<sentence.size(); i++)
         {
-            checksum ^= (uint8_t)sentence[i];
+            int c = sentence[i];
+            checksum ^= c;
         }
-        uint8_t rest = checksum % 16;
+        uint8_t rest = checksum%16;
         uint8_t quotient = (checksum-rest)/16;
         std::string ret = getHexString(quotient) + getHexString(rest);
         ret = "*" + ret;
