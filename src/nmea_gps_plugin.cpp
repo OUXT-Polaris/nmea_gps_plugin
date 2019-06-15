@@ -14,8 +14,8 @@ namespace gazebo
 
     void NmeaGpsPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
     {
-        world_ptr_ = model->GetWorld();
-        // load parameters
+        model_ptr_ = model;
+        world_ptr_ = model_ptr_->GetWorld();
         if (!sdf->HasElement("robotNamespace"))
         {
             namespace_.clear();
@@ -26,7 +26,7 @@ namespace gazebo
         }
         if (!sdf->HasElement("bodyName"))
         {
-            link_ptr_ = model->GetLink();
+            link_ptr_ = model_ptr_->GetLink();
             link_name_ = link_ptr_->GetName();
         }
         else
@@ -88,14 +88,52 @@ namespace gazebo
         return;
     }
 
+    std::string NmeaGpsPlugin::getHexString(uint8_t value)
+    {
+        ROS_ASSERT(value <= 16);
+        std::string ret;
+        if(value == 10)
+        {
+            ret = "A";
+        }
+        else if(value == 11)
+        {
+            ret = "B";
+        }
+        else if(value == 12)
+        {
+            ret = "C";
+        }
+        else if(value == 13)
+        {
+            ret = "D";
+        }
+        else if(value == 14)
+        {
+            ret = "E";
+        }
+        else if(value == 15)
+        {
+            ret = "F";
+        }
+        else
+        {
+            ret = std::to_string(value);
+        }
+        return ret;
+    }
+
     std::string NmeaGpsPlugin::getCheckSum(std::string sentence)
     {
-        nmea_gps_plugin::byte checksum;
+        //nmea_gps_plugin::byte checksum;
+        uint8_t checksum;
         for(int i=0; i<sentence.size(); i++)
         {
-            checksum ^= (nmea_gps_plugin::byte)sentence[i];
+            checksum ^= (uint8_t)sentence[i];
         }
-        std::string ret(reinterpret_cast<char const*>(checksum));
+        uint8_t rest = checksum % 16;
+        uint8_t quotient = (checksum-rest)/16;
+        std::string ret = getHexString(quotient) + getHexString(rest);
         ret = "*" + ret;
         return ret;
     }
@@ -223,15 +261,8 @@ namespace gazebo
         int day = utc_time->tm_mday;
         int month = utc_time->tm_mon;
         int year = 1900 + utc_time->tm_year;
-        std::string year_str;
-        for(int i=0; std::to_string(year).size(); i++)
-        {
-            if(i >= std::to_string(year).size()-2)
-            {
-                year_str = year_str + std::to_string(year)[i];
-            }
-        }
-        ret = std::to_string(day) + std::to_string(month) + year_str;
+        std::string year_str = std::to_string(year);
+        ret = std::to_string(day) + std::to_string(month) + year_str[2] + year_str[3];
         return ret;
     }
 
@@ -297,8 +328,8 @@ namespace gazebo
         current_utm_quat.z = pose.rot.z;
         current_utm_quat.w = pose.rot.w;
 #endif
-        geodesy::UTMPose current_utm_pose(current_utm_point,current_utm_quat);
-        current_geo_pose_ = geodesy::toMsg(current_utm_pose);
+        current_geo_pose_.position = geodesy::toMsg(current_utm_point);
+        current_geo_pose_.orientation = current_utm_quat;
         nmea_pub_.publish(getGPRMC(stamp));
         nmea_pub_.publish(getGPGGA(stamp));
         nmea_pub_.publish(getGPVTG(stamp));
@@ -306,7 +337,7 @@ namespace gazebo
         return;
     }
 
-    std::string convertToDmm(double value)
+    std::string NmeaGpsPlugin::convertToDmm(double value)
     {
         std::string ret;
         ROS_ASSERT(value > 0.0);

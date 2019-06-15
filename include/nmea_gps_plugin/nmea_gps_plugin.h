@@ -7,6 +7,7 @@
 #include <gazebo/physics/Link.hh>
 #include <gazebo/physics/World.hh>
 #include <gazebo/physics/physics.hh>
+#include <gazebo/util/system.hh>
 
 // Headers in ROS
 #include <ros/ros.h>
@@ -14,6 +15,7 @@
 #include <geographic_msgs/GeoPose.h>
 #include <quaternion_operation/quaternion_operation.h>
 #include <geodesy/utm.h>
+#include <geodesy/wgs84.h>
 #include <hector_gazebo_plugins/update_timer.h>
 
 // Headers in STL
@@ -32,8 +34,6 @@ namespace nmea_gps_plugin
         constexpr double publish_rate = 1.0;
         const std::string nmea_topic = "/nmea/sentence";
     }
-
-    typedef unsigned char byte;
 }
 
 namespace gazebo
@@ -75,6 +75,7 @@ namespace gazebo
             nmea_msgs::Sentence getGPVTG(ros::Time stamp);
             nmea_msgs::Sentence getGPHDT(ros::Time stamp);
             std::string convertToDmm(double value);
+            std::string getHexString(uint8_t value);
             geometry_msgs::Twist current_twist_;
     };
 }

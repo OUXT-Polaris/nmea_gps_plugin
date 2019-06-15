@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
   geodesy
   nmea_msgs
+  geographic_msgs
   roscpp
   quaternion_operation
   hector_gazebo_plugins
@@ -35,6 +36,13 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_library(nmea_gps_plugin src/nmea_gps_plugin)
 target_link_libraries(nmea_gps_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+# Install Headers
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 # Install library/executable
 install(TARGETS nmea_gps_plugin
