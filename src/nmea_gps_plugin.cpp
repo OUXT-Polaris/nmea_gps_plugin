@@ -86,6 +86,8 @@ namespace gazebo
         {
             sdf->GetElement("velocityGaussiaNoise")->GetValue()->Get(velocity_gaussian_noise_);
         }
+        std::unique_ptr<GpsSensorModel> sensor_model_ptr(new GpsSensorModel(position_gaussiaa_noise_,orientation_gaussian_noise_,velocity_gaussian_noise_));
+        sensor_model_ptr_ = std::move(sensor_model_ptr);
         node_handle_ = ros::NodeHandle(namespace_);
         nmea_pub_ = node_handle_.advertise<nmea_msgs::Sentence>(nmea_topic_,1);
         initial_pose_.position.longitude = reference_longitude_;
@@ -96,7 +98,7 @@ namespace gazebo
         vec.y = 0.0;
         vec.z = reference_heading_;
         initial_pose_.orientation = quaternion_operation::convertEulerAngleToQuaternion(vec);
-        initial_utim_pose_ = geodesy::UTMPose(initial_pose_);
+        initial_utm_pose_ = geodesy::UTMPose(initial_pose_);
         update_timer_.setUpdateRate(publish_rate_);
         update_timer_.Load(world_ptr_, sdf);
         update_connection_ = update_timer_.Connect(boost::bind(&NmeaGpsPlugin::Update, this));
@@ -344,20 +346,21 @@ namespace gazebo
         current_twist_.linear.y = linear_velocity.y;
         current_twist_.linear.z = linear_velocity.z;
 #endif
+        current_twist_ = sensor_model_ptr_->addGausiannNoise(current_twist_);
         ros::Time stamp;
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
         geodesy::UTMPoint current_utm_point;
 #if (GAZEBO_MAJOR_VERSION >= 8)
-        current_utm_point.northing = pose.Pos().X();
-        current_utm_point.easting = pose.Pos().Y();
-        current_utm_point.altitude = pose.Pos().Z();
+        current_utm_point.northing = pose.Pos().X() + initial_utm_pose_.position.northing;
+        current_utm_point.easting = pose.Pos().Y() + initial_utm_pose_.position.easting;
+        current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
 #else
         current_utm_point.northing = pose.pos.x;
         current_utm_point.easting = pose.pos.y;
         current_utm_point.altitude = pose.pos.z;
 #endif
-        current_utm_point.zone = initial_utim_pose_.position.zone;
+        current_utm_point.zone = initial_utm_pose_.position.zone;
         geometry_msgs::Quaternion current_utm_quat;
 #if (GAZEBO_MAJOR_VERSION >= 8)
         current_utm_quat.x = pose.Rot().X();
@@ -370,6 +373,8 @@ namespace gazebo
         current_utm_quat.z = pose.rot.z;
         current_utm_quat.w = pose.rot.w;
 #endif
+        current_utm_point = sensor_model_ptr_->addGausiannNoise(current_utm_point);
+        current_utm_quat = sensor_model_ptr_->addGausiannNoise(current_utm_quat);
         current_geo_pose_.position = geodesy::toMsg(current_utm_point);
         current_geo_pose_.orientation = current_utm_quat;
         nmea_pub_.publish(getGPRMC(stamp));

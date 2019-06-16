@@ -36,9 +36,9 @@ namespace nmea_gps_plugin
         constexpr double reference_altitude = 0.0;
         constexpr double publish_rate = 1.0;
         const std::string nmea_topic = "/nmea/sentence";
-        constexpr double position_gaussiaa_noise = 0.1;
-        constexpr double orientation_gaussian_noise = 0.1;
-        constexpr double velocity_gaussian_noise = 0.1;
+        constexpr double position_gaussiaa_noise = 0.05;
+        constexpr double orientation_gaussian_noise = 0.05;
+        constexpr double velocity_gaussian_noise = 0.05;
     }
 }
 
@@ -70,7 +70,7 @@ namespace gazebo
             ros::Publisher nmea_pub_;
             geographic_msgs::GeoPose initial_pose_;
             geographic_msgs::GeoPose current_geo_pose_;
-            geodesy::UTMPose initial_utim_pose_;
+            geodesy::UTMPose initial_utm_pose_;
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
             std::string getCheckSum(std::string sentence);
