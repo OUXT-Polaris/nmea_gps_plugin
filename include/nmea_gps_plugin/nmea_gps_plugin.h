@@ -38,16 +38,56 @@
 
 namespace nmea_gps_plugin
 {
+    /**
+     * @brief default parameters
+     * 
+     */
     namespace default_param
     {
+        /**
+         * @brief initial longitude of the robot
+         * 
+         */
         constexpr double reference_longitude = 0.0;
+        /**
+         * @brief initial longitude of the robot
+         * 
+         */
         constexpr double reference_latitude = 0.0;
+        /**
+         * @brief nitial heading of the robot
+         * 
+         */
         constexpr double reference_heading = 0.0;
+        /**
+         * @brief initial altitude of the robot
+         * 
+         */
         constexpr double reference_altitude = 0.0;
+        /**
+         * @brief publish rate of the each sentence
+         * 
+         */
         constexpr double publish_rate = 1.0;
-        const std::string nmea_topic = "/nmea/sentence";
+        /**
+         * @brief topic name of the nmea_sentence topic
+         * 
+         */
+        const std::string nmea_topic = "/nmea_sentence";
+        /**
+         * @brief gaussian noise of the posision
+         * 
+         */
         constexpr double position_gaussiaa_noise = 0.05;
+        /**
+         * @brief gaussian noise of the orientation
+         * 
+         */
         constexpr double orientation_gaussian_noise = 0.05;
+        /**
+         * @brief gaussian noise of the velocity
+         * 
+         */
         constexpr double velocity_gaussian_noise = 0.05;
     }
 }
@@ -60,8 +100,20 @@ namespace gazebo
             NmeaGpsPlugin();
             virtual ~NmeaGpsPlugin();
         protected:
+            /**
+             * @brief Load parameters for the nmea gps plugin
+             * 
+             */
             virtual void Load(physics::ModelPtr model, sdf::ElementPtr sdf);
+            /**
+             * @brief Reset the nmea gps plugin.
+             * 
+             */
             virtual void Reset();
+            /**
+             * @brief Update the sensor state and publish nmea sentence.
+             * 
+             */
             virtual void Update();
         private:
             physics::WorldPtr world_ptr_;
@@ -84,14 +136,37 @@ namespace gazebo
             UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
             std::string getCheckSum(std::string sentence);
+            /**
+             * @brief Get Unix time from the timestmap.
+             * 
+             */
             std::string getUnixTime(ros::Time stamp);
+            /**
+             * @brief Get Unix day from the timestamp.
+             * 
+             */
             std::string getUnixDay(ros::Time stamp);
+            /**
+             * @brief generate GPRMC sentence
+             * @sa https://docs.novatel.com/OEM7/Content/Logs/GPRMC.htm
+             */
             nmea_msgs::Sentence getGPRMC(ros::Time stamp);
+            /**
+             * @brief generate GPGGA sentence
+             * @sa https://docs.novatel.com/OEM7/Content/Logs/GPGGA.htm?Highlight=GPGGA
+             */
             nmea_msgs::Sentence getGPGGA(ros::Time stamp);
+            /**
+             * @brief generate GPVTG sentence
+             * @sa https://docs.novatel.com/OEM7/Content/Logs/GPVTG.htm?Highlight=GPVTG
+             */
             nmea_msgs::Sentence getGPVTG(ros::Time stamp);
             nmea_msgs::Sentence getGPHDT(ros::Time stamp);
+            /**
+             * @brief Convert DDD -> DMM format
+             * 
+             */
             std::string convertToDmm(double value);
-            uint8_t convertQuotient(uint8_t value);
             std::string getHexString(uint8_t value);
             geometry_msgs::Twist current_twist_;
             std::unique_ptr<GpsSensorModel> sensor_model_ptr_;
