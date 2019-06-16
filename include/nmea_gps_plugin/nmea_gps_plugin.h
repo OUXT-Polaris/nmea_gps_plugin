@@ -94,6 +94,10 @@ namespace nmea_gps_plugin
 
 namespace gazebo
 {
+    /**
+     * @brief Class of the NMEA gps plugin
+     * 
+     */
     class NmeaGpsPlugin : public ModelPlugin
     {
         public:

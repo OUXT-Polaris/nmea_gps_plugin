@@ -357,7 +357,7 @@ namespace gazebo
         current_twist_.linear.y = linear_velocity.y;
         current_twist_.linear.z = linear_velocity.z;
 #endif
-        current_twist_ = sensor_model_ptr_->addGausiannNoise(current_twist_);
+        current_twist_ = sensor_model_ptr_->addGaussianNoise(current_twist_);
         ros::Time stamp;
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
@@ -384,8 +384,8 @@ namespace gazebo
         current_utm_quat.z = pose.rot.z;
         current_utm_quat.w = pose.rot.w;
 #endif
-        current_utm_point = sensor_model_ptr_->addGausiannNoise(current_utm_point);
-        current_utm_quat = sensor_model_ptr_->addGausiannNoise(current_utm_quat);
+        current_utm_point = sensor_model_ptr_->addGaussianNoise(current_utm_point);
+        current_utm_quat = sensor_model_ptr_->addGaussianNoise(current_utm_quat);
         current_geo_pose_.position = geodesy::toMsg(current_utm_point);
         current_geo_pose_.orientation = current_utm_quat;
         nmea_pub_.publish(getGPRMC(stamp));

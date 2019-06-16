@@ -29,7 +29,7 @@ GpsSensorModel::~GpsSensorModel()
     
 }
 
-geometry_msgs::Twist GpsSensorModel::addGausiannNoise(geometry_msgs::Twist twist)
+geometry_msgs::Twist GpsSensorModel::addGaussianNoise(geometry_msgs::Twist twist)
 {
     twist.linear.x = twist.linear.x + twist_dist_(engine_);
     twist.linear.y = twist.linear.y + twist_dist_(engine_);
@@ -40,14 +40,14 @@ geometry_msgs::Twist GpsSensorModel::addGausiannNoise(geometry_msgs::Twist twist
     return twist;
 }
 
-geometry_msgs::Quaternion GpsSensorModel::addGausiannNoise(geometry_msgs::Quaternion orientation)
+geometry_msgs::Quaternion GpsSensorModel::addGaussianNoise(geometry_msgs::Quaternion orientation)
 {
     geometry_msgs::Vector3 vec = quaternion_operation::convertQuaternionToEulerAngle(orientation);
     vec.z = vec.z + orientation_dist_(engine_);
     return quaternion_operation::convertEulerAngleToQuaternion(vec);
 }
 
-geodesy::UTMPoint GpsSensorModel::addGausiannNoise(geodesy::UTMPoint point)
+geodesy::UTMPoint GpsSensorModel::addGaussianNoise(geodesy::UTMPoint point)
 {
     point.easting = point.easting + position_dist_(engine_);
     point.northing = point.northing + position_dist_(engine_);
