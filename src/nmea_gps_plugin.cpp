@@ -149,7 +149,7 @@ namespace gazebo
         nmea_msgs::Sentence sentence;
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
-        sentence.sentence = "$GPGGA," + getUnixTime(stamp);
+        sentence.sentence = "$GPGGA," + getUnixTime(stamp) + ",";
         double lat = std::fabs(current_geo_pose_.position.latitude);
         std::string north_or_south;
         if(lat >= 0.0)
@@ -341,7 +341,10 @@ namespace gazebo
     {
         std::string ret;
         ROS_ASSERT(value > 0.0);
-        ret = std::to_string(std::floor(value)) + std::to_string((value-std::floor(value)*60.0));
+        int deg = std::floor(value);
+        int min = std::floor((value-(double)deg)*60);
+        float sec = (value-(double)deg)*60 - std::floor((value-(double)deg)*60);
+        ret = std::to_string(deg) + std::to_string(min) + std::to_string(sec);
         return ret;
     }
 
