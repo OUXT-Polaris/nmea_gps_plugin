@@ -277,7 +277,34 @@ namespace gazebo
         int sec = utc_time->tm_sec;
         uint32_t nsec = stamp.nsec;
         int csec = round((double)nsec/std::pow(10,7));
-        ret = std::to_string(hour) + std::to_string(min) + std::to_string(sec) + "." + std::to_string(csec);
+        std::string hour_str;
+        if(hour<9)
+        {
+            hour_str = "0" + std::to_string(hour);
+        }
+        else
+        {
+            hour_str = std::to_string(hour);
+        }
+        std::string min_str;
+        if(min<=9)
+        {
+            min_str = "0" + std::to_string(min);
+        }
+        else
+        {
+            min_str = std::to_string(min);
+        }
+        std::string sec_str;
+        if(sec<=9)
+        {
+            sec_str = "0" + std::to_string(sec);
+        }
+        else
+        {
+            sec_str = std::to_string(sec);
+        }
+        ret = hour_str + min_str + sec_str + "." + std::to_string(csec);
         return ret;
     }
 
