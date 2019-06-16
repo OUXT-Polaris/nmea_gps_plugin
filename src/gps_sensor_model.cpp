@@ -1,3 +1,14 @@
+/**
+ * @file gps_sensor_model.cpp
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief implimentation of GPS noise model
+ * @version 0.1
+ * @date 2019-06-16
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+
 #include <nmea_gps_plugin/gps_sensor_model.h>
 
 GpsSensorModel::GpsSensorModel(double position_gaussian_noise,

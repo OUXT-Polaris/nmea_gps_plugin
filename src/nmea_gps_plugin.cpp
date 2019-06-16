@@ -1,3 +1,14 @@
+/**
+ * @file nmea_gps_plugin.cpp
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief implimentation of NMEA GPS Plugin
+ * @version 0.1
+ * @date 2019-06-16
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+
 #include <nmea_gps_plugin/nmea_gps_plugin.h>
 
 namespace gazebo

@@ -1,6 +1,16 @@
 #ifndef NMEA_GPS_PLUGIN_NMEA_GPS_PLUGIN_H_INCLUDED
 #define NMEA_GPS_PLUGIN_NMEA_GPS_PLUGIN_H_INCLUDED
 
+/**
+ * @file nmea_gps_plugin.h
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief definition for the NmeaGpsPlugin class
+ * @version 0.1
+ * @date 2019-06-16
+ * 
+ * @copyright Copyright (c) 2019
+ */
+
 // Headers in Gazebo
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/Model.hh>

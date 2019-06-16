@@ -1,6 +1,17 @@
 #ifndef NMEA_GPS_PLUGIN_GPS_SENSOR_MODEL_H_INCLUDED
 #define NMEA_GPS_PLUGIN_GPS_SENSOR_MODEL_H_INCLUDED
 
+/**
+ * @file gps_sensor_model.h
+ * @author Masaya Kataoka (ms.kataoka@gmail.com)
+ * @brief Sensor model of the nmea GPS plugin
+ * @version 0.1
+ * @date 2019-06-16
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+
 // Headers in ROS
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>

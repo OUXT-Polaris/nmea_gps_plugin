@@ -35,7 +35,7 @@
   <exec_depend>quaternion_operation</exec_depend>
   <exec_depend>hector_gazebo_plugins</exec_depend>
   <exec_depend>eigen</exec_depend>
-
+  <exec_depend>rosdoc_lite</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
