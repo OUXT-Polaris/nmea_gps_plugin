@@ -34,7 +34,7 @@ include_directories(
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-add_library(nmea_gps_plugin src/nmea_gps_plugin)
+add_library(nmea_gps_plugin src/nmea_gps_plugin.cpp src/gps_sensor_model.cpp)
 target_link_libraries(nmea_gps_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 # Install Headers

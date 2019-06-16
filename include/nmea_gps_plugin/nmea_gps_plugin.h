@@ -23,6 +23,9 @@
 #include <math.h>
 #include <memory>
 
+// Headers in this package
+#include <nmea_gps_plugin/gps_sensor_model.h>
+
 namespace nmea_gps_plugin
 {
     namespace default_param
@@ -33,6 +36,9 @@ namespace nmea_gps_plugin
         constexpr double reference_altitude = 0.0;
         constexpr double publish_rate = 1.0;
         const std::string nmea_topic = "/nmea/sentence";
+        constexpr double position_gaussiaa_noise = 0.1;
+        constexpr double orientation_gaussian_noise = 0.1;
+        constexpr double velocity_gaussian_noise = 0.1;
     }
 }
 
@@ -78,6 +84,10 @@ namespace gazebo
             uint8_t convertQuotient(uint8_t value);
             std::string getHexString(uint8_t value);
             geometry_msgs::Twist current_twist_;
+            std::unique_ptr<GpsSensorModel> sensor_model_ptr_;
+            double position_gaussiaa_noise_;
+            double orientation_gaussian_noise_;
+            double velocity_gaussian_noise_;
     };
 }
 

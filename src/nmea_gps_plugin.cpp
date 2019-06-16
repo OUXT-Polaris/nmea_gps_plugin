@@ -40,6 +40,9 @@ namespace gazebo
         reference_heading_ = nmea_gps_plugin::default_param::reference_heading;
         nmea_topic_ = nmea_gps_plugin::default_param::nmea_topic;
         publish_rate_ = nmea_gps_plugin::default_param::publish_rate;
+        position_gaussiaa_noise_ = nmea_gps_plugin::default_param::position_gaussiaa_noise;
+        orientation_gaussian_noise_ = nmea_gps_plugin::default_param::orientation_gaussian_noise;
+        velocity_gaussian_noise_ = nmea_gps_plugin::default_param::velocity_gaussian_noise;
         if (sdf->HasElement("frameId"))
         {
             frame_id_ = sdf->GetElement("frameId")->GetValue()->GetAsString();
@@ -70,6 +73,18 @@ namespace gazebo
         if (sdf->HasElement("referenceAltitude"))
         {
             sdf->GetElement("referenceAltitude")->GetValue()->Get(reference_altitude_);
+        }
+        if (sdf->HasElement("positionGaussiaNoise"))
+        {
+            sdf->GetElement("positionGaussiaNoise")->GetValue()->Get(position_gaussiaa_noise_);
+        }
+        if (sdf->HasElement("orientationGaussiaNoise"))
+        {
+            sdf->GetElement("orientationGaussiaNoise")->GetValue()->Get(orientation_gaussian_noise_);
+        }
+        if (sdf->HasElement("velocityGaussiaNoise"))
+        {
+            sdf->GetElement("velocityGaussiaNoise")->GetValue()->Get(velocity_gaussian_noise_);
         }
         node_handle_ = ros::NodeHandle(namespace_);
         nmea_pub_ = node_handle_.advertise<nmea_msgs::Sentence>(nmea_topic_,1);
