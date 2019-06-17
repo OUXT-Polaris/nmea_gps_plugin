@@ -428,8 +428,7 @@ namespace gazebo
         value = std::fabs(value);
         int deg = std::floor(value);
         int min = std::floor((value-(double)deg)*60);
-        float sec = (value-(double)deg)*60 - std::floor((value-(double)deg)*60);
-        ret = std::to_string(deg) + std::to_string(min) + std::to_string(sec);
+        ret = std::to_string(deg) + std::to_string(min);
         return ret;
     }
 
