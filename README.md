@@ -51,3 +51,7 @@ https://docs.novatel.com/OEM7/Content/Logs/GPHDT.htm?Highlight=GPHDT
       </plugin>
     </gazebo>
 ```
+
+## Demo
+
+[![No video](http://img.youtube.com/vi/DXBwnfiT0oM/0.jpg)](https://www.youtube.com/watch?v=DXBwnfiT0oM)
