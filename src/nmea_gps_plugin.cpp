@@ -397,6 +397,8 @@ namespace gazebo
         geometry_msgs::Vector3 current_utm_orientation = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
+        double diff_n = pose.pos.X() - initial_utm_pose_.position.northing;
+        double diff_e = pose.pos.Y() - initial_utm_pose_.position.easting;
         current_utm_point.northing = pose.pos.x +
             initial_utm_pose_.position.northing +
             diff_n * std::cos(current_utm_orientation.z) +
@@ -408,7 +410,7 @@ namespace gazebo
         current_utm_point.altitude = pose.pos.z + initial_utm_pose_.position.altitude;
 #endif
         current_utm_point.zone = initial_utm_pose_.position.zone;
-        current_utm_point.band = 'Q';
+        //current_utm_point.band = 'Q';
         current_utm_point = sensor_model_ptr_->addGaussianNoise(current_utm_point);
         current_utm_quat = sensor_model_ptr_->addGaussianNoise(current_utm_quat);
         current_geo_pose_.position = geodesy::toMsg(current_utm_point);
