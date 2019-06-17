@@ -15,7 +15,6 @@
   <build_depend>nmea_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>quaternion_operation</build_depend>
-  <build_depend>hector_gazebo_plugins</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>geographic_msgs</build_depend>
   <build_export_depend>gazebo</build_export_depend>
@@ -24,7 +23,6 @@
   <build_export_depend>nmea_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>quaternion_operation</build_export_depend>
-  <build_export_depend>hector_gazebo_plugins</build_export_depend>
   <build_export_depend>eigen</build_export_depend>
   <build_export_depend>geographic_msgs</build_export_depend>
   <exec_depend>gazebo</exec_depend>
@@ -33,7 +31,6 @@
   <exec_depend>nmea_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>quaternion_operation</exec_depend>
-  <exec_depend>hector_gazebo_plugins</exec_depend>
   <exec_depend>eigen</exec_depend>
   <exec_depend>rosdoc_lite</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->

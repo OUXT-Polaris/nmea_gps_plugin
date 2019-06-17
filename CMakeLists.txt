@@ -11,13 +11,12 @@ find_package(catkin REQUIRED COMPONENTS
   geographic_msgs
   roscpp
   quaternion_operation
-  hector_gazebo_plugins
 )
 
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES nmea_gps_plugin
-  CATKIN_DEPENDS gazebo gazebo_ros geodesy nmea_msgs roscpp quaternion_operation hector_gazebo_plugins
+  CATKIN_DEPENDS gazebo gazebo_ros geodesy nmea_msgs roscpp quaternion_operation
 #  DEPENDS system_lib
 )
 
