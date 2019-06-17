@@ -175,7 +175,7 @@ namespace gazebo
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
         sentence.sentence = "$GPGGA," + getUnixTime(stamp) + ",";
-        double lat = std::fabs(current_geo_pose_.position.latitude);
+        double lat = current_geo_pose_.position.latitude;
         std::string north_or_south;
         if(lat >= 0.0)
         {
@@ -186,7 +186,7 @@ namespace gazebo
             north_or_south = "S";
         }
         sentence.sentence = sentence.sentence + convertToDmm(lat) + "," + north_or_south + ",";
-        double lon = std::fabs(current_geo_pose_.position.longitude);
+        double lon = current_geo_pose_.position.longitude;
         std::string east_or_west;
         if(lon >= 0.0)
         {
@@ -209,7 +209,7 @@ namespace gazebo
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
         sentence.sentence = "$GPRMC," + getUnixTime(stamp) + ",A,";
-        double lat = std::fabs(current_geo_pose_.position.latitude);
+        double lat = current_geo_pose_.position.latitude;
         std::string north_or_south;
         if(lat >= 0.0)
         {
@@ -220,7 +220,7 @@ namespace gazebo
             north_or_south = "S";
         }
         sentence.sentence = sentence.sentence + convertToDmm(lat) + "," + north_or_south + ",";
-        double lon = std::fabs(current_geo_pose_.position.longitude);
+        double lon = current_geo_pose_.position.longitude;
         std::string east_or_west;
         if(lon >= 0.0)
         {
@@ -425,7 +425,7 @@ namespace gazebo
     std::string NmeaGpsPlugin::convertToDmm(double value)
     {
         std::string ret;
-        ROS_ASSERT(value > 0.0);
+        value = std::fabs(value);
         int deg = std::floor(value);
         int min = std::floor((value-(double)deg)*60);
         float sec = (value-(double)deg)*60 - std::floor((value-(double)deg)*60);
