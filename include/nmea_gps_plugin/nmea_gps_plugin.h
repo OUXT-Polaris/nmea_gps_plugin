@@ -26,7 +26,7 @@
 #include <quaternion_operation/quaternion_operation.h>
 #include <geodesy/utm.h>
 #include <geodesy/wgs84.h>
-#include <hector_gazebo_plugins/update_timer.h>
+//#include <hector_gazebo_plugins/update_timer.h>
 
 // Headers in STL
 #include <time.h>
@@ -35,6 +35,9 @@
 
 // Headers in this package
 #include <nmea_gps_plugin/gps_sensor_model.h>
+
+// Headers in Boost
+#include <boost/optional.hpp>
 
 namespace nmea_gps_plugin
 {
@@ -137,8 +140,9 @@ namespace gazebo
             geographic_msgs::GeoPose initial_pose_;
             geographic_msgs::GeoPose current_geo_pose_;
             geodesy::UTMPose initial_utm_pose_;
-            UpdateTimer update_timer_;
+            //UpdateTimer update_timer_;
             event::ConnectionPtr update_connection_;
+            boost::optional<common::Time> last_publish_timestamp_;
             std::string getCheckSum(std::string sentence);
             /**
              * @brief Get Unix time from the timestmap.

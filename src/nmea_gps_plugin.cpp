@@ -20,7 +20,7 @@ namespace gazebo
 
     NmeaGpsPlugin::~NmeaGpsPlugin()
     {
-
+        //update_timer_.Disconnect(update_connection_);
     }
 
     void NmeaGpsPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -48,7 +48,7 @@ namespace gazebo
         reference_longitude_ = nmea_gps_plugin::default_param::reference_longitude;
         reference_latitude_ = nmea_gps_plugin::default_param::reference_latitude;
         reference_altitude_ = nmea_gps_plugin::default_param::reference_altitude;
-        reference_heading_ = nmea_gps_plugin::default_param::reference_heading;
+        reference_heading_ = nmea_gps_plugin::default_param::reference_heading/180*M_PI;
         nmea_topic_ = nmea_gps_plugin::default_param::nmea_topic;
         publish_rate_ = nmea_gps_plugin::default_param::publish_rate;
         position_gaussiaa_noise_ = nmea_gps_plugin::default_param::position_gaussiaa_noise;
@@ -110,9 +110,10 @@ namespace gazebo
         vec.z = reference_heading_;
         initial_pose_.orientation = quaternion_operation::convertEulerAngleToQuaternion(vec);
         initial_utm_pose_ = geodesy::UTMPose(initial_pose_);
-        update_timer_.setUpdateRate(publish_rate_);
-        update_timer_.Load(world_ptr_, sdf);
-        update_connection_ = update_timer_.Connect(boost::bind(&NmeaGpsPlugin::Update, this));
+        update_connection_ = event::Events::ConnectWorldUpdateBegin(std::bind(&NmeaGpsPlugin::Update, this));
+        //update_timer_.setUpdateRate(publish_rate_);
+        //update_timer_.Load(world_ptr_, sdf);
+        //update_connection_ = update_timer_.Connect(boost::bind(&NmeaGpsPlugin::Update, this));
         return;
     }
 
@@ -168,7 +169,7 @@ namespace gazebo
 
     void NmeaGpsPlugin::Reset()
     {
-        update_timer_.Reset();
+        //update_timer_.Reset();
         return;
     }
 
@@ -343,7 +344,17 @@ namespace gazebo
 #else
         common::Time sim_time = world_ptr_->GetSimTime();
 #endif
-        double dt = update_timer_.getTimeSinceLastUpdate().Double();
+        bool publish;
+        if(!last_publish_timestamp_ || sim_time-(*last_publish_timestamp_) > common::Time(1/publish_rate_))
+        {
+            last_publish_timestamp_ = sim_time;
+            publish = true;
+        }
+        if(!publish)
+        {
+            return;
+        }
+        //double dt = update_timer_.getTimeSinceLastUpdate().Double();
 #if (GAZEBO_MAJOR_VERSION >= 8)
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
@@ -362,28 +373,47 @@ namespace gazebo
         stamp.sec = sim_time.sec;
         stamp.nsec = sim_time.nsec;
         geodesy::UTMPoint current_utm_point;
-#if (GAZEBO_MAJOR_VERSION >= 8)
-        current_utm_point.northing = pose.Pos().X() + initial_utm_pose_.position.northing;
-        current_utm_point.easting = pose.Pos().Y() + initial_utm_pose_.position.easting;
-        current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
-#else
-        current_utm_point.northing = pose.pos.x;
-        current_utm_point.easting = pose.pos.y;
-        current_utm_point.altitude = pose.pos.z;
-#endif
-        current_utm_point.zone = initial_utm_pose_.position.zone;
         geometry_msgs::Quaternion current_utm_quat;
 #if (GAZEBO_MAJOR_VERSION >= 8)
         current_utm_quat.x = pose.Rot().X();
         current_utm_quat.y = pose.Rot().Y();
         current_utm_quat.z = pose.Rot().Z();
         current_utm_quat.w = pose.Rot().W();
+        geometry_msgs::Vector3 current_utm_orientation 
+            = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
+        current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
+        current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
+        double diff_n = pose.Pos().X() - initial_utm_pose_.position.northing;
+        double diff_e = pose.Pos().Y() - initial_utm_pose_.position.easting;
+        current_utm_point.northing = pose.Pos().X() + 
+            initial_utm_pose_.position.northing;// +
+            diff_n * std::cos(current_utm_orientation.z) +
+            diff_e * std::sin(current_utm_orientation.z);
+        current_utm_point.easting = pose.Pos().Y() + 
+            initial_utm_pose_.position.easting;// + 
+            diff_n * std::cos(current_utm_orientation.z) -
+            diff_e * std::sin(current_utm_orientation.z);        
+        current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
 #else
         current_utm_quat.x = pose.rot.x;
         current_utm_quat.y = pose.rot.y;
         current_utm_quat.z = pose.rot.z;
         current_utm_quat.w = pose.rot.w;
+        geometry_msgs::Vector3 current_utm_orientation = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
+        current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
+        current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
+        current_utm_point.northing = pose.Pos().x +
+            initial_utm_pose_.position.northing +
+            diff_n * std::cos(current_utm_orientation.z) +
+            diff_e * std::sin(current_utm_orientation.z);
+        current_utm_point.easting = pose.Pos().y +
+            initial_utm_pose_.position.easting + 
+            diff_n * std::cos(current_utm_orientation.z) -
+            diff_e * std::sin(current_utm_orientation.z);  
+        current_utm_point.altitude = pose.pos.z + initial_utm_pose_.position.altitude;
 #endif
+        current_utm_point.zone = initial_utm_pose_.position.zone;
+        current_utm_point.band = 'Q';
         current_utm_point = sensor_model_ptr_->addGaussianNoise(current_utm_point);
         current_utm_quat = sensor_model_ptr_->addGaussianNoise(current_utm_quat);
         current_geo_pose_.position = geodesy::toMsg(current_utm_point);
