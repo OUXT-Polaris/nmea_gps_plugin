@@ -111,9 +111,6 @@ namespace gazebo
         initial_pose_.orientation = quaternion_operation::convertEulerAngleToQuaternion(vec);
         initial_utm_pose_ = geodesy::UTMPose(initial_pose_);
         update_connection_ = event::Events::ConnectWorldUpdateBegin(std::bind(&NmeaGpsPlugin::Update, this));
-        //update_timer_.setUpdateRate(publish_rate_);
-        //update_timer_.Load(world_ptr_, sdf);
-        //update_connection_ = update_timer_.Connect(boost::bind(&NmeaGpsPlugin::Update, this));
         return;
     }
 
@@ -169,7 +166,6 @@ namespace gazebo
 
     void NmeaGpsPlugin::Reset()
     {
-        //update_timer_.Reset();
         return;
     }
 
@@ -354,7 +350,6 @@ namespace gazebo
         {
             return;
         }
-        //double dt = update_timer_.getTimeSinceLastUpdate().Double();
 #if (GAZEBO_MAJOR_VERSION >= 8)
         ignition::math::Pose3d pose = link_ptr_->WorldPose();
         ignition::math::Vector3d linear_velocity = link_ptr_->WorldLinearVel();
@@ -402,11 +397,11 @@ namespace gazebo
         geometry_msgs::Vector3 current_utm_orientation = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        current_utm_point.northing = pose.Pos().x +
+        current_utm_point.northing = pose.pos.x +
             initial_utm_pose_.position.northing +
             diff_n * std::cos(current_utm_orientation.z) +
             diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = pose.Pos().y +
+        current_utm_point.easting = pose.pos.y +
             initial_utm_pose_.position.easting + 
             diff_n * std::cos(current_utm_orientation.z) -
             diff_e * std::sin(current_utm_orientation.z);  
