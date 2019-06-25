@@ -378,16 +378,8 @@ namespace gazebo
             = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        double diff_n = pose.Pos().X() - initial_utm_pose_.position.northing;
-        double diff_e = pose.Pos().Y() - initial_utm_pose_.position.easting;
-        current_utm_point.northing = pose.Pos().X() + 
-            initial_utm_pose_.position.northing;// +
-            diff_n * std::cos(current_utm_orientation.z) +
-            diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = pose.Pos().Y() + 
-            initial_utm_pose_.position.easting;// + 
-            diff_n * std::cos(current_utm_orientation.z) -
-            diff_e * std::sin(current_utm_orientation.z);        
+        current_utm_point.northing = pose.Pos().X() - initial_utm_pose_.position.northing;
+        current_utm_point.easting = (pose.Pos().Y() - initial_utm_pose_.position.easting) *-1;   
         current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
 #else
         current_utm_quat.x = pose.rot.x;
@@ -399,14 +391,8 @@ namespace gazebo
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
         double diff_n = pose.pos.x - initial_utm_pose_.position.northing;
         double diff_e = pose.pos.y - initial_utm_pose_.position.easting;
-        current_utm_point.northing = pose.pos.x +
-            initial_utm_pose_.position.northing +
-            diff_n * std::cos(current_utm_orientation.z) +
-            diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = pose.pos.y +
-            initial_utm_pose_.position.easting + 
-            diff_n * std::cos(current_utm_orientation.z) -
-            diff_e * std::sin(current_utm_orientation.z);  
+        current_utm_point.northing = pose.pos.x - initial_utm_pose_.position.northing;
+        current_utm_point.easting = (pose.pos.y - initial_utm_pose_.position.easting) *-1;    
         current_utm_point.altitude = pose.pos.z + initial_utm_pose_.position.altitude;
 #endif
         current_utm_point.zone = initial_utm_pose_.position.zone;
