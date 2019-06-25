@@ -427,8 +427,9 @@ namespace gazebo
         std::string ret;
         value = std::fabs(value);
         int deg = std::floor(value);
-        int min = std::floor((value-(double)deg)*60);
-        ret = std::to_string(deg) + std::to_string(min);
+        std::stringstream ss;
+        ss << std::setprecision(7) << (value-(double)deg)*60.0;
+        ret = std::to_string(deg) + ss.str();
         return ret;
     }
 

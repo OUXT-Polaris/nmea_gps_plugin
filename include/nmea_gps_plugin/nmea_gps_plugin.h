@@ -26,12 +26,12 @@
 #include <quaternion_operation/quaternion_operation.h>
 #include <geodesy/utm.h>
 #include <geodesy/wgs84.h>
-//#include <hector_gazebo_plugins/update_timer.h>
 
 // Headers in STL
 #include <time.h>
 #include <math.h>
 #include <memory>
+#include <iomanip>
 
 // Headers in this package
 #include <nmea_gps_plugin/gps_sensor_model.h>
