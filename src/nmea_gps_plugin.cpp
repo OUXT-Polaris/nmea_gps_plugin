@@ -363,6 +363,10 @@ namespace gazebo
         current_twist_.linear.y = linear_velocity.y;
         current_twist_.linear.z = linear_velocity.z;
 #endif
+        if(!initial_gazebo_pose_)
+        {
+            initial_gazebo_pose_ = pose;
+        }
         current_twist_ = sensor_model_ptr_->addGaussianNoise(current_twist_);
         ros::Time stamp;
         stamp.sec = sim_time.sec;
@@ -378,14 +382,14 @@ namespace gazebo
             = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        double diff_n = pose.Pos().X() - initial_utm_pose_.position.northing;
-        double diff_e = pose.Pos().Y() - initial_utm_pose_.position.easting;
+        double diff_n = pose.Pos().X() - initial_gazebo_pose_->Pos().X();
+        double diff_e = pose.Pos().Y() - initial_gazebo_pose_->Pos().Y();
         current_utm_point.northing = pose.Pos().X() + 
-            initial_utm_pose_.position.northing;// +
+            initial_utm_pose_.position.northing +
             diff_n * std::cos(current_utm_orientation.z) +
             diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = pose.Pos().Y() + 
-            initial_utm_pose_.position.easting;// + 
+        current_utm_point.easting = -pose.Pos().Y() + 
+            initial_utm_pose_.position.easting + 
             diff_n * std::cos(current_utm_orientation.z) -
             diff_e * std::sin(current_utm_orientation.z);        
         current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
@@ -397,13 +401,13 @@ namespace gazebo
         geometry_msgs::Vector3 current_utm_orientation = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        double diff_n = pose.pos.x - initial_utm_pose_.position.northing;
-        double diff_e = pose.pos.y - initial_utm_pose_.position.easting;
+        double diff_n = pose.pos.x - initial_gazebo_pose_->pos.x;
+        double diff_e = pose.pos.y - initial_gazebo_pose_->pos.y;
         current_utm_point.northing = pose.pos.x +
             initial_utm_pose_.position.northing +
             diff_n * std::cos(current_utm_orientation.z) +
             diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = pose.pos.y +
+        current_utm_point.easting = -pose.pos.y +
             initial_utm_pose_.position.easting + 
             diff_n * std::cos(current_utm_orientation.z) -
             diff_e * std::sin(current_utm_orientation.z);  
