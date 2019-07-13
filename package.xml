@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nmea_gps_plugin</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>The nmea_gps_plugin package</description>
 
   <maintainer email="ms.kataoka@gmail.com">Masaya Kataoka</maintainer>
