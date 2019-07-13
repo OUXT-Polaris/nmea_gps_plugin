@@ -399,14 +399,10 @@ namespace gazebo
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
         double diff_x = pose.pos.x - initial_gazebo_pose_->pos.x;
         double diff_y = pose.pos.y - initial_gazebo_pose_->pos.y;
-        current_utm_point.northing = pose.pos.x +
-            initial_utm_pose_.position.northing +
-            diff_x * std::cos(current_utm_orientation.z) +
-            diff_y * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = -pose.pos.y +
-            initial_utm_pose_.position.easting + 
-            diff_x * std::sin(current_utm_orientation.z) -
-            diff_y * std::cos(current_utm_orientation.z); 
+        double r = std::sqrt(diff_x*diff_x + diff_y*diff_y);
+        double theta = std::atan2(diff_y,diff_x) + reference_heading_;
+        current_utm_point.northing = initial_utm_pose_.position.northing + r*std::cos(theta);
+        current_utm_point.easting = initial_utm_pose_.position.easting - r*std::sin(theta);
         current_utm_point.altitude = pose.pos.z + initial_utm_pose_.position.altitude;
 #endif
         current_utm_point.zone = initial_utm_pose_.position.zone;
