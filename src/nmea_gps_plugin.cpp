@@ -20,7 +20,7 @@ namespace gazebo
 
     NmeaGpsPlugin::~NmeaGpsPlugin()
     {
-        //update_timer_.Disconnect(update_connection_);
+
     }
 
     void NmeaGpsPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
@@ -341,7 +341,7 @@ namespace gazebo
         common::Time sim_time = world_ptr_->GetSimTime();
 #endif
         bool publish;
-        if(!last_publish_timestamp_ || sim_time-(*last_publish_timestamp_) > common::Time(1/publish_rate_))
+        if(!last_publish_timestamp_ || sim_time-(*last_publish_timestamp_) > common::Time(1.0/publish_rate_))
         {
             last_publish_timestamp_ = sim_time;
             publish = true;
@@ -382,16 +382,12 @@ namespace gazebo
             = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        double diff_n = pose.Pos().X() - initial_gazebo_pose_->Pos().X();
-        double diff_e = pose.Pos().Y() - initial_gazebo_pose_->Pos().Y();
-        current_utm_point.northing = pose.Pos().X() + 
-            initial_utm_pose_.position.northing +
-            diff_n * std::cos(current_utm_orientation.z) +
-            diff_e * std::sin(current_utm_orientation.z);
-        current_utm_point.easting = -pose.Pos().Y() + 
-            initial_utm_pose_.position.easting + 
-            diff_n * std::cos(current_utm_orientation.z) -
-            diff_e * std::sin(current_utm_orientation.z);        
+        double diff_x = pose.Pos().X() - initial_gazebo_pose_->Pos().X();
+        double diff_y = pose.Pos().Y() - initial_gazebo_pose_->Pos().Y();
+        double r = std::sqrt(diff_x*diff_x + diff_y*diff_y);
+        double theta = std::atan2(diff_y,diff_x) + reference_heading_;
+        current_utm_point.northing = initial_utm_pose_.position.northing + r*std::cos(theta);
+        current_utm_point.easting = initial_utm_pose_.position.easting - r*std::sin(theta);
         current_utm_point.altitude = pose.Pos().Z() + initial_utm_pose_.position.altitude;
 #else
         current_utm_quat.x = pose.rot.x;
@@ -401,16 +397,16 @@ namespace gazebo
         geometry_msgs::Vector3 current_utm_orientation = quaternion_operation::convertQuaternionToEulerAngle(current_utm_quat);
         current_utm_orientation.z = current_utm_orientation.z + reference_heading_;
         current_utm_quat = quaternion_operation::convertEulerAngleToQuaternion(current_utm_orientation);
-        double diff_n = pose.pos.x - initial_gazebo_pose_->pos.x;
-        double diff_e = pose.pos.y - initial_gazebo_pose_->pos.y;
+        double diff_x = pose.pos.x - initial_gazebo_pose_->pos.x;
+        double diff_y = pose.pos.y - initial_gazebo_pose_->pos.y;
         current_utm_point.northing = pose.pos.x +
             initial_utm_pose_.position.northing +
-            diff_n * std::cos(current_utm_orientation.z) +
-            diff_e * std::sin(current_utm_orientation.z);
+            diff_x * std::cos(current_utm_orientation.z) +
+            diff_y * std::sin(current_utm_orientation.z);
         current_utm_point.easting = -pose.pos.y +
             initial_utm_pose_.position.easting + 
-            diff_n * std::cos(current_utm_orientation.z) -
-            diff_e * std::sin(current_utm_orientation.z);  
+            diff_x * std::sin(current_utm_orientation.z) -
+            diff_y * std::cos(current_utm_orientation.z); 
         current_utm_point.altitude = pose.pos.z + initial_utm_pose_.position.altitude;
 #endif
         current_utm_point.zone = initial_utm_pose_.position.zone;
