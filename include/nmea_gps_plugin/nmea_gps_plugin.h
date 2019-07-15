@@ -181,6 +181,11 @@ namespace gazebo
             double position_gaussiaa_noise_;
             double orientation_gaussian_noise_;
             double velocity_gaussian_noise_;
+#if (GAZEBO_MAJOR_VERSION >= 8)
+            boost::optional<ignition::math::Pose3d> initial_gazebo_pose_;
+#else
+            boost::optional<gazebo::math::Pose> initial_gazebo_pose_;
+#endif
     };
 }
 
