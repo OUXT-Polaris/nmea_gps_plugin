@@ -233,7 +233,11 @@ namespace gazebo
         sentence.sentence = sentence.sentence + convertToDmm(lon) + "," + east_or_west + ",";
         double vel = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 1.94384; //[knot]
         sentence.sentence = sentence.sentence + std::to_string(vel) + ",";
-        double angle = std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        double angle = -1*std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        if(angle < 0)
+        {
+            angle = angle + 360.0;
+        }
         angle = (double)(int)((angle*pow(10.0, 2)) + 0.9 ) * pow(10.0, -1);
         sentence.sentence = sentence.sentence + std::to_string(angle) + ",";
         sentence.sentence = sentence.sentence + getUnixDay(stamp) + ",,,";
@@ -248,7 +252,11 @@ namespace gazebo
         sentence.header.frame_id = frame_id_;
         sentence.header.stamp = stamp;
         sentence.sentence = "$GPVTG,";
-        double angle = std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        double angle = -1*std::atan2(current_twist_.linear.y,current_twist_.linear.x);
+        if(angle < 0)
+        {
+            angle = angle + 360.0;
+        }
         angle = (double)(int)((angle*pow(10.0, 2)) + 0.9 ) * pow(10.0, -1);
         sentence.sentence = sentence.sentence + std::to_string(angle) + ",T,,M,";
         double vel_knot = std::sqrt(std::pow(current_twist_.linear.x,2)+std::pow(current_twist_.linear.y,2)) * 1.94384; //[knot]
@@ -267,7 +275,7 @@ namespace gazebo
         sentence.header.stamp = stamp;
         sentence.sentence = "$GPHDT,";
         geometry_msgs::Vector3 vec = quaternion_operation::convertQuaternionToEulerAngle(current_geo_pose_.orientation);
-        double angle = vec.z/M_PI*180;
+        double angle = -1*vec.z/M_PI*180;
         if(angle < 0)
         {
             angle = angle + 360.0;
